@@ -25,11 +25,13 @@
   <script>
     const STORAGE_KEY = 'shikotashki_global_count';
     const INTERVAL_SECONDS = 30;
+    const BIN_ID = '683deddf8960c979a5a46738';
+    const API_KEY = '$2a$10$pS6QxvC.MBICFA.NUD7x1eJXQ.HOM/ErWYNne4YZ.z.1yltFnG/F.';
 
     async function getCount() {
-      const res = await fetch('https://api.jsonbin.io/v3/b/665c8d7fad19ca34f8715a1e/latest', {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
         headers: {
-          'X-Master-Key': 'YOUR_JSONBIN_API_KEY'
+          'X-Master-Key': API_KEY
         }
       });
       const data = await res.json();
@@ -37,11 +39,11 @@
     }
 
     async function setCount(newCount) {
-      await fetch('https://api.jsonbin.io/v3/b/665c8d7fad19ca34f8715a1e', {
+      await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-Master-Key': 'YOUR_JSONBIN_API_KEY'
+          'X-Master-Key': API_KEY
         },
         body: JSON.stringify({ count: newCount })
       });
