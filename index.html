@@ -4,22 +4,68 @@
   <meta charset="UTF-8">
   <title>Щикоташки</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 50px; background: #fdf6e3; }
-    h1 { font-size: 2em; }
-    #count { font-size: 3em; margin: 20px 0; }
-    button { font-size: 1.2em; margin: 10px; padding: 10px 20px; cursor: pointer; }
-    input[type=password] { font-size: 1em; padding: 5px; }
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background: linear-gradient(to bottom, #fff0f5, #ffe4e1);
+      color: #333;
+    }
+    h1 {
+      font-size: 2.5em;
+      color: #d63384;
+      margin-bottom: 10px;
+    }
+    #count {
+      font-size: 2.5em;
+      margin: 20px 0;
+      color: #ff69b4;
+    }
+    button {
+      font-size: 1.2em;
+      margin: 10px;
+      padding: 12px 24px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background: #ffb6c1;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.1s ease;
+    }
+    button:hover {
+      background: #ff69b4;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    input[type=password] {
+      font-size: 1em;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .heart {
+      font-size: 1.5em;
+      color: red;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
   </style>
 </head>
 <body>
-  <h1>Счётчик щикоташек</h1>
+  <h1>Счётчик щикоташек <span class="heart">❤️</span></h1>
   <div id="count">Загрузка...</div>
 
-  <button onclick="addShikotashka()">Добавить щикоташки</button>
+  <button onclick="addShikotashka()">Добавить щикоташки 💖</button>
 
   <div style="margin-top: 30px;">
     <input type="password" id="resetPass" placeholder="Пароль">
-    <button onclick="resetShikotashki()">Обнулить</button>
+    <button onclick="resetShikotashki()">Обнулить 🗑️</button>
   </div>
 
   <script>
@@ -50,7 +96,7 @@
     }
 
     function formatMinutes(seconds) {
-      return Math.floor(seconds / 60) + ' минута(ы) щикоташек';
+      return Math.floor(seconds / 60) + ' минута(ы) щикоташек ❤️';
     }
 
     async function updateDisplay() {
