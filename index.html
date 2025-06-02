@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Счикоташки для Даши</title>
   <style>
     body {
@@ -45,43 +44,85 @@
 <body>
 
   <h1>Счикоташки для Даши 👣</h1>
-  <button onclick="addPunishment()">Наказание</button>
-  <div id="count">0 минут</div>
+  <button id="punishBtn">Наказание</button>
+  <div id="count">Загрузка...</div>
 
   <div id="reset-section">
-    <input type="password" id="password" placeholder="Введите пароль">
-    <button onclick="checkPassword()">Скинуть наказание</button>
+    <input type="password" id="password" placeholder="Введите пароль" />
+    <button id="resetBtn">Скинуть наказание</button>
   </div>
 
-  <script>
-    let totalSeconds = 0;
+<script>
+  const BIN_ID = "683d9b4a8a456b7966a87cc2";
+  const SECRET_KEY = "$2a$10$pS6QxvC.MBICFA.NUD7x1eJXQ.HOM/ErWYNne4YZ.z.1yltFnG/F.";
+  const BASE_URL = https://api.jsonbin.io/v3/b/${BIN_ID};
+  let totalSeconds = 0;
 
-    function addPunishment() {
-      totalSeconds += 30;
+  const countEl = document.getElementById('count');
+  const punishBtn = document.getElementById('punishBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const passwordInput = document.getElementById('password');
+
+  async function fetchSeconds() {
+    try {
+      const res = await fetch(${BASE_URL}/latest, {
+        headers: {
+          'X-Master-Key': SECRET_KEY
+        }
+      });
+      const data = await res.json();
+      totalSeconds = data.record.seconds || 0;
       updateDisplay();
+    } catch (e) {
+      countEl.textContent = "Ошибка загрузки данных";
+      console.error("Ошибка при получении данных:", e);
     }
+  }
 
-    function updateDisplay() {
-      let minutes = Math.floor(totalSeconds / 60);
-      let seconds = totalSeconds % 60;
-      let display = `${minutes} минут`;
-      if (seconds > 0) {
-        display += ` и ${seconds} секунд`;
-      }
-      document.getElementById('count').textContent = display;
+  async function updateSecondsOnServer() {
+    try {
+      await fetch(BASE_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': SECRET_KEY,
+          'X-Bin-Versioning': 'false'
+        },
+        body: JSON.stringify({ seconds: totalSeconds })
+      });
+      updateDisplay();
+    } catch (e) {
+      alert("Не удалось сохранить данные");
+      console.error("Ошибка при сохранении:", e);
     }
+  }
 
-    function checkPassword() {
-      const input = document.getElementById('password').value;
-      if (input === "1313") {
-        totalSeconds = 0;
-        updateDisplay();
-        alert("Наказание скинуто 😇");
-      } else {
-        alert("Неверный пароль 😈");
-      }
+  function updateDisplay() {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    let text = ${minutes} минут;
+    if (seconds > 0) text +=  и ${seconds} секунд;
+    countEl.textContent = text;
+  }
+
+  punishBtn.addEventListener('click', async () => {
+    totalSeconds += 30;
+    await updateSecondsOnServer();
+  });
+
+  resetBtn.addEventListener('click', async () => {
+    if (passwordInput.value === '1313') {
+      totalSeconds = 0;
+      await updateSecondsOnServer();
+      alert('Наказание скинуто 😇');
+      passwordInput.value = '';
+    } else {
+      alert('Неверный пароль 😈');
     }
-  </script>
+  });
+
+  fetchSeconds();
+</script>
 
 </body>
 </html>
