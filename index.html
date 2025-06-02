@@ -52,73 +52,63 @@
     <button id="resetBtn">Скинуть наказание</button>
   </div>
 
-<script>
-  const BIN_ID = "683de4e58561e97a501ec9d4";
-  const SECRET_KEY = "$2a$10$pS6QxvC.MBICFA.NUD7x1eJXQ.HOM/ErWYNne4YZ.z.1yltFnG/F.";
-  const BASE_URL = https://api.jsonbin.io/v3/b/${BIN_ID};
-  let totalSeconds = 0;
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-  const countEl = document.getElementById('count');
-  const punishBtn = document.getElementById('punishBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const passwordInput = document.getElementById('password');
+  <script>
+    // Твой Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAAMcQSxCPPYFJ9yWUXcCcdpodWf5ibR7Y",
+      authDomain: "dasha-43512.firebaseapp.com",
+      databaseURL: "https://dasha-43512-default-rtdb.firebaseio.com",
+      projectId: "dasha-43512",
+      storageBucket: "dasha-43512.firebasestorage.app",
+      messagingSenderId: "172218745417",
+      appId: "1:172218745417:web:4c8382c23ae23599ddb598",
+      measurementId: "G-QTP639368M"
+    };
 
-  async function fetchSeconds() {
-    try {
-      const res = await fetch(${BASE_URL}/latest);
-      const data = await res.json();
-      totalSeconds = data.record.seconds || 0;
-      updateDisplay();
-    } catch (e) {
-      countEl.textContent = "Ошибка загрузки данных";
-      console.error("Ошибка при получении данных:", e);
+    // Инициализация Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const secondsRef = db.ref('seconds');
+
+    const countEl = document.getElementById('count');
+    const punishBtn = document.getElementById('punishBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const passwordInput = document.getElementById('password');
+
+    // Обновляем счётчик на странице
+    function updateDisplay(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      let text = ${minutes} минут;
+      if (seconds > 0) text +=  и ${seconds} секунд;
+      countEl.textContent = text;
     }
-  }
 
-  async function updateSecondsOnServer() {
-    try {
-      await fetch(BASE_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': SECRET_KEY,
-          'X-Bin-Versioning': 'false'
-        },
-        body: JSON.stringify({ seconds: totalSeconds })
-      });
-      updateDisplay();
-    } catch (e) {
-      alert("Не удалось сохранить данные");
-      console.error("Ошибка при сохранении:", e);
-    }
-  }
+    // Слушаем изменения в базе — обновляем UI у всех
+    secondsRef.on('value', snapshot => {
+      const val = snapshot.val();
+      updateDisplay(val || 0);
+    });
 
-  function updateDisplay() {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    let text = ${minutes} минут;
-    if (seconds > 0) text +=  и ${seconds} секунд;
-    countEl.textContent = text;
-  }
+    // Клик "Наказание" — добавляем 30 секунд
+    punishBtn.onclick = () => {
+      secondsRef.transaction(current => (current || 0) + 30);
+    };
 
-  punishBtn.addEventListener('click', async () => {
-    totalSeconds += 30;
-    await updateSecondsOnServer();
-  });
-
-  resetBtn.addEventListener('click', async () => {
-    if (passwordInput.value === '1313') {
-      totalSeconds = 0;
-      await updateSecondsOnServer();
-      alert('Наказание скинуто 😇');
-      passwordInput.value = '';
-    } else {
-      alert('Неверный пароль 😈');
-    }
-  });
-
-  fetchSeconds();
-</script>
-
+    // Сброс по паролю
+    resetBtn.onclick = () => {
+      if (passwordInput.value === '1313') {
+        secondsRef.set(0);
+        passwordInput.value = '';
+        alert('Наказание скинуто 😇');
+      } else {
+        alert('Неверный пароль 😈');
+      }
+    };
+  </script>
 </body>
 </html>
