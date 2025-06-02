@@ -53,7 +53,7 @@
   </div>
 
 <script>
-  const BIN_ID = "683d9b4a8a456b7966a87cc2";
+  const BIN_ID = "683de4e58561e97a501ec9d4";
   const SECRET_KEY = "$2a$10$pS6QxvC.MBICFA.NUD7x1eJXQ.HOM/ErWYNne4YZ.z.1yltFnG/F.";
   const BASE_URL = https://api.jsonbin.io/v3/b/${BIN_ID};
   let totalSeconds = 0;
@@ -65,11 +65,7 @@
 
   async function fetchSeconds() {
     try {
-      const res = await fetch(${BASE_URL}/latest, {
-        headers: {
-          'X-Master-Key': SECRET_KEY
-        }
-      });
+      const res = await fetch(${BASE_URL}/latest);
       const data = await res.json();
       totalSeconds = data.record.seconds || 0;
       updateDisplay();
